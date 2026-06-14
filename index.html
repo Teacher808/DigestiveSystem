@@ -1,0 +1,471 @@
+import React, { useState, useEffect } from 'react';
+
+// Data extracted directly from the lesson text
+const journeySteps = [
+  {
+    id: 'mouth',
+    title: 'Mouth',
+    type: 'Mechanical & Chemical',
+    description: 'This is where digestion starts. You chew food to break it into smaller pieces.',
+    details: 'Mechanical processing begins here with chewing. Saliva also starts the chemical processing of food.',
+    icon: '👄',
+    color: 'bg-pink-100 border-pink-400 text-pink-800'
+  },
+  {
+    id: 'esophagus',
+    title: 'Esophagus',
+    type: 'Transport',
+    description: 'A tube that moves food from your mouth to your stomach.',
+    details: 'Food moves down this tube using peristaltic contractions (a type of mechanical processing).',
+    icon: '⬇️',
+    color: 'bg-orange-100 border-orange-400 text-orange-800'
+  },
+  {
+    id: 'stomach',
+    title: 'Stomach',
+    type: 'Mechanical & Chemical',
+    description: 'It breaks down food using gastric juices and muscles.',
+    details: 'Muscles mechanically churn the food, while gastric juices and enzymes chemically break it down further.',
+    icon: '🥩',
+    color: 'bg-red-100 border-red-400 text-red-800'
+  },
+  {
+    id: 'helpers',
+    title: 'Liver, Gallbladder & Pancreas',
+    type: 'Chemical (Enzymes)',
+    description: 'These organs help with digestion by making substances called enzymes to break down food.',
+    details: 'Liver produces bile (for fats), Gallbladder stores it. Pancreas releases amylase (carbs), lipase (fats), and protease (proteins).',
+    icon: '🧪',
+    color: 'bg-teal-100 border-teal-400 text-teal-800'
+  },
+  {
+    id: 'small-intestine',
+    title: 'Small Intestine',
+    type: 'Absorption',
+    description: 'Where nutrients from food are taken and absorbed by your body through your bloodstream.',
+    details: 'Tiny finger-like parts called villi line the walls to absorb nutrients and send them into your bloodstream.',
+    icon: '🧬',
+    color: 'bg-purple-100 border-purple-400 text-purple-800'
+  },
+  {
+    id: 'large-intestine',
+    title: 'Large Intestine',
+    type: 'Water Absorption',
+    description: 'It absorbs water and gets the food ready to be turned into waste.',
+    details: 'After nutrients are absorbed, this organ absorbs leftover water, turning the remaining food into solid waste.',
+    icon: '💧',
+    color: 'bg-blue-100 border-blue-400 text-blue-800'
+  },
+  {
+    id: 'anus',
+    title: 'Anus',
+    type: 'Elimination',
+    description: 'This is where waste leaves your body.',
+    details: 'The final step of the digestive system, where elimination of solid waste occurs.',
+    icon: '🚽',
+    color: 'bg-gray-200 border-gray-500 text-gray-800'
+  }
+];
+
+const quizQuestions = [
+  {
+    question: "Which organ produces bile to help digest fats?",
+    options: ["Stomach", "Pancreas", "Liver", "Small Intestine"],
+    answer: "Liver"
+  },
+  {
+    question: "What are the tiny finger-like parts in the small intestine called?",
+    options: ["Enzymes", "Villi", "Gastric Juices", "Amylase"],
+    answer: "Villi"
+  },
+  {
+    question: "What type of processing happens when you chew food in your mouth?",
+    options: ["Chemical processing", "Mechanical processing", "Absorption", "Elimination"],
+    answer: "Mechanical processing"
+  },
+  {
+    question: "Which organ absorbs water and turns leftovers into solid waste?",
+    options: ["Large Intestine", "Small Intestine", "Esophagus", "Gallbladder"],
+    answer: "Large Intestine"
+  },
+  {
+    question: "Which enzyme breaks down proteins?",
+    options: ["Amylase", "Lipase", "Protease", "Bile"],
+    answer: "Protease"
+  }
+];
+
+const matchingData = [
+  { organ: "Mouth", function: "Chews food to break it into smaller pieces" },
+  { organ: "Esophagus", function: "Tube that moves food to the stomach" },
+  { organ: "Stomach", function: "Breaks down food using gastric juices" },
+  { organ: "Small Intestine", function: "Absorbs nutrients using villi" },
+  { organ: "Large Intestine", function: "Absorbs water and creates solid waste" },
+  { organ: "Pancreas", function: "Releases amylase, lipase, and protease" }
+];
+
+const JourneyView = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const nextStep = () => {
+    if (currentStep < journeySteps.length - 1) setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    if (currentStep > 0) setCurrentStep(currentStep - 1);
+  };
+
+  return (
+    <div className="flex flex-col md:flex-row gap-6 p-4">
+      {/* Timeline Sidebar */}
+      <div className="w-full md:w-1/3 flex flex-col items-center border-r-2 border-dashed border-gray-300 pr-4">
+        <h3 className="text-xl font-bold mb-6 text-gray-700">The Food's Path</h3>
+        <div className="relative flex flex-col items-center w-full">
+          {journeySteps.map((step, index) => (
+            <div key={step.id} className="flex flex-col items-center w-full relative group cursor-pointer" onClick={() => setCurrentStep(index)}>
+              {/* Connector Line */}
+              {index !== 0 && <div className={`w-1 h-8 ${index <= currentStep ? 'bg-green-500' : 'bg-gray-200'} transition-colors duration-500`}></div>}
+              
+              {/* Node */}
+              <div className={`w-full flex items-center p-3 rounded-xl border-2 transition-all duration-300 ${index === currentStep ? 'border-blue-500 bg-blue-50 shadow-md transform scale-105' : 'border-gray-200 bg-white hover:bg-gray-50'}`}>
+                <div className="text-2xl mr-3">{step.icon}</div>
+                <div className="font-semibold text-gray-700">{step.title}</div>
+                
+                {/* Food Indicator */}
+                {index === currentStep && (
+                  <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 text-2xl animate-bounce">
+                    🍎
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Detail Panel */}
+      <div className="w-full md:w-2/3 flex flex-col justify-center">
+        <div className={`rounded-2xl p-8 border-2 shadow-lg transition-all duration-500 ${journeySteps[currentStep].color}`}>
+          <div className="text-6xl mb-4 text-center">{journeySteps[currentStep].icon}</div>
+          <h2 className="text-3xl font-bold text-center mb-2">{journeySteps[currentStep].title}</h2>
+          <div className="text-center mb-6 inline-block bg-white/50 px-4 py-1 rounded-full font-medium text-sm w-max mx-auto block">
+            Process: {journeySteps[currentStep].type}
+          </div>
+          
+          <div className="bg-white/80 p-6 rounded-xl shadow-inner mb-6">
+            <h4 className="font-bold text-lg mb-2 text-gray-800">What happens here?</h4>
+            <p className="text-gray-700 text-lg leading-relaxed mb-4">{journeySteps[currentStep].description}</p>
+            <div className="border-t border-gray-300/50 pt-4 mt-4">
+              <h4 className="font-bold text-sm text-gray-600 mb-1">Deep Dive:</h4>
+              <p className="text-gray-600 text-sm italic">{journeySteps[currentStep].details}</p>
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-8">
+            <button 
+              onClick={prevStep}
+              disabled={currentStep === 0}
+              className={`px-6 py-3 rounded-lg font-bold transition-all ${currentStep === 0 ? 'opacity-50 cursor-not-allowed bg-gray-300' : 'bg-white hover:bg-gray-100 shadow-md'}`}
+            >
+              &larr; Previous Stop
+            </button>
+            <button 
+              onClick={nextStep}
+              disabled={currentStep === journeySteps.length - 1}
+              className={`px-6 py-3 rounded-lg font-bold transition-all ${currentStep === journeySteps.length - 1 ? 'opacity-50 cursor-not-allowed bg-gray-300' : 'bg-white hover:bg-gray-100 shadow-md'}`}
+            >
+              Next Stop &rarr;
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MatchingGame = () => {
+  const [organs, setOrgans] = useState([]);
+  const [functions, setFunctions] = useState([]);
+  const [selectedOrgan, setSelectedOrgan] = useState(null);
+  const [selectedFunction, setSelectedFunction] = useState(null);
+  const [matches, setMatches] = useState([]);
+  const [message, setMessage] = useState("");
+
+  // Shuffle function
+  const shuffle = (array) => [...array].sort(() => Math.random() - 0.5);
+
+  useEffect(() => {
+    setOrgans(shuffle(matchingData.map(d => d.organ)));
+    setFunctions(shuffle(matchingData.map(d => d.function)));
+  }, []);
+
+  useEffect(() => {
+    if (selectedOrgan && selectedFunction) {
+      const isMatch = matchingData.some(d => d.organ === selectedOrgan && d.function === selectedFunction);
+      
+      if (isMatch) {
+        setMatches([...matches, selectedOrgan]);
+        setMessage("✅ Correct Match!");
+      } else {
+        setMessage("❌ Oops! Try again.");
+      }
+      
+      setTimeout(() => {
+        setSelectedOrgan(null);
+        setSelectedFunction(null);
+        setMessage("");
+      }, 1000);
+    }
+  }, [selectedOrgan, selectedFunction, matches]);
+
+  const resetGame = () => {
+    setMatches([]);
+    setOrgans(shuffle(matchingData.map(d => d.organ)));
+    setFunctions(shuffle(matchingData.map(d => d.function)));
+    setMessage("");
+  };
+
+  return (
+    <div className="p-6 max-w-4xl mx-auto text-center">
+      <h2 className="text-2xl font-bold mb-2 text-gray-800">Organ Match-Up</h2>
+      <p className="text-gray-600 mb-6">Select an Organ on the left, then select its matching Function on the right.</p>
+      
+      <div className="h-8 mb-4">
+        <span className={`font-bold text-lg ${message.includes('Correct') ? 'text-green-600' : 'text-red-500'}`}>{message}</span>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-8 justify-center">
+        {/* Organs Column */}
+        <div className="w-full md:w-1/2 flex flex-col gap-3">
+          <h3 className="font-bold text-lg bg-blue-100 py-2 rounded-t-lg">Organs</h3>
+          {organs.map((organ, idx) => (
+            <button
+              key={idx}
+              disabled={matches.includes(organ)}
+              onClick={() => setSelectedOrgan(organ)}
+              className={`p-4 rounded-xl border-2 transition-all text-left font-semibold text-lg
+                ${matches.includes(organ) ? 'bg-green-100 border-green-500 text-green-700 opacity-60' : 
+                  selectedOrgan === organ ? 'bg-blue-100 border-blue-500 shadow-md transform scale-105' : 
+                  'bg-white border-gray-200 hover:border-blue-300 hover:bg-blue-50'}`}
+            >
+              {matches.includes(organ) ? `✅ ${organ}` : organ}
+            </button>
+          ))}
+        </div>
+
+        {/* Functions Column */}
+        <div className="w-full md:w-1/2 flex flex-col gap-3">
+          <h3 className="font-bold text-lg bg-orange-100 py-2 rounded-t-lg">Functions</h3>
+          {functions.map((func, idx) => {
+            // Find if this function is already matched
+            const matchedOrgan = matchingData.find(d => d.function === func)?.organ;
+            const isMatched = matches.includes(matchedOrgan);
+
+            return (
+              <button
+                key={idx}
+                disabled={isMatched}
+                onClick={() => setSelectedFunction(func)}
+                className={`p-4 rounded-xl border-2 transition-all text-left text-md
+                  ${isMatched ? 'bg-green-100 border-green-500 text-green-700 opacity-60' : 
+                    selectedFunction === func ? 'bg-orange-100 border-orange-500 shadow-md transform scale-105' : 
+                    'bg-white border-gray-200 hover:border-orange-300 hover:bg-orange-50'}`}
+              >
+                {isMatched ? `✅ ${func}` : func}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {matches.length === matchingData.length && (
+        <div className="mt-8 p-6 bg-yellow-100 border-2 border-yellow-400 rounded-xl animate-pulse">
+          <h3 className="text-2xl font-bold text-yellow-800 mb-2">🎉 Congratulations! 🎉</h3>
+          <p className="text-yellow-700">You matched all the organs to their functions perfectly!</p>
+          <button onClick={resetGame} className="mt-4 px-6 py-2 bg-yellow-500 text-white font-bold rounded-lg hover:bg-yellow-600 transition-colors">
+            Play Again
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const QuizView = () => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [score, setScore] = useState(0);
+  const [showScore, setShowScore] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [isCorrect, setIsCorrect] = useState(null);
+
+  const handleAnswerClick = (option) => {
+    if (selectedAnswer) return; // Prevent multiple clicks
+
+    setSelectedAnswer(option);
+    const correct = option === quizQuestions[currentQuestion].answer;
+    setIsCorrect(correct);
+
+    if (correct) {
+      setScore(score + 1);
+    }
+
+    setTimeout(() => {
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+      if (currentQuestion + 1 < quizQuestions.length) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        setShowScore(true);
+      }
+    }, 1500);
+  };
+
+  const restartQuiz = () => {
+    setCurrentQuestion(0);
+    setScore(0);
+    setShowScore(false);
+    setSelectedAnswer(null);
+  };
+
+  if (showScore) {
+    return (
+      <div className="p-8 text-center bg-white rounded-2xl shadow-lg max-w-2xl mx-auto border-2 border-blue-100">
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">Quiz Complete!</h2>
+        <div className="text-6xl mb-6">
+          {score === quizQuestions.length ? '🏆' : score > 2 ? '⭐' : '📚'}
+        </div>
+        <p className="text-2xl mb-6">
+          You scored <span className="font-bold text-blue-600">{score}</span> out of <span className="font-bold">{quizQuestions.length}</span>!
+        </p>
+        <p className="text-gray-600 mb-8">
+          {score === quizQuestions.length 
+            ? "Perfect! You are a digestive system expert." 
+            : "Great effort! Review the journey to brush up on the facts."}
+        </p>
+        <button 
+          onClick={restartQuiz}
+          className="bg-blue-600 text-white px-8 py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition-colors shadow-md"
+        >
+          Retake Quiz
+        </button>
+      </div>
+    );
+  }
+
+  const q = quizQuestions[currentQuestion];
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Knowledge Check</h2>
+        <span className="bg-blue-100 text-blue-800 px-4 py-1 rounded-full font-semibold">
+          Question {currentQuestion + 1} of {quizQuestions.length}
+        </span>
+      </div>
+
+      <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100">
+        <h3 className="text-xl font-semibold mb-6 text-gray-800 leading-relaxed">{q.question}</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {q.options.map((option, idx) => {
+            let buttonClass = "p-4 border-2 rounded-xl text-left font-medium transition-all duration-300 text-lg ";
+            
+            if (selectedAnswer) {
+              if (option === q.answer) {
+                buttonClass += "bg-green-100 border-green-500 text-green-800"; // Always show correct answer
+              } else if (option === selectedAnswer) {
+                buttonClass += "bg-red-100 border-red-500 text-red-800"; // Show if picked wrong answer
+              } else {
+                buttonClass += "bg-gray-50 border-gray-200 text-gray-400 opacity-50"; // Dim others
+              }
+            } else {
+              buttonClass += "bg-white border-gray-200 hover:border-blue-400 hover:bg-blue-50 text-gray-700 hover:shadow-md";
+            }
+
+            return (
+              <button 
+                key={idx} 
+                onClick={() => handleAnswerClick(option)}
+                disabled={selectedAnswer !== null}
+                className={buttonClass}
+              >
+                <div className="flex justify-between items-center">
+                  <span>{option}</span>
+                  {selectedAnswer && option === q.answer && <span>✅</span>}
+                  {selectedAnswer === option && option !== q.answer && <span>❌</span>}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      
+      {/* Progress Bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2.5 mt-8">
+        <div className="bg-blue-600 h-2.5 rounded-full transition-all duration-500" style={{ width: `${((currentQuestion) / quizQuestions.length) * 100}%` }}></div>
+      </div>
+    </div>
+  );
+};
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('journey');
+
+  return (
+    <div className="min-h-screen bg-slate-50 font-sans text-gray-900 pb-12">
+      {/* Header */}
+      <header className="bg-gradient-to-r from-teal-500 to-blue-600 text-white py-8 px-4 shadow-lg mb-8">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-extrabold mb-2 tracking-tight">The Digestive System</h1>
+            <p className="text-blue-100 text-lg max-w-2xl">
+              Explore how your body turns the food you eat into energy and removes waste. 
+              Follow the journey, play the matching game, and test your knowledge!
+            </p>
+          </div>
+          <div className="text-6xl mt-4 md:mt-0 animate-bounce">
+            🍎
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation Tabs */}
+      <div className="max-w-6xl mx-auto px-4 mb-8">
+        <div className="flex flex-wrap gap-2 justify-center bg-white p-2 rounded-2xl shadow-sm border border-gray-100">
+          <button 
+            onClick={() => setActiveTab('journey')}
+            className={`px-8 py-3 rounded-xl font-bold transition-all ${activeTab === 'journey' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            🧭 Interactive Journey
+          </button>
+          <button 
+            onClick={() => setActiveTab('matching')}
+            className={`px-8 py-3 rounded-xl font-bold transition-all ${activeTab === 'matching' ? 'bg-orange-500 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            🧩 Matching Game
+          </button>
+          <button 
+            onClick={() => setActiveTab('quiz')}
+            className={`px-8 py-3 rounded-xl font-bold transition-all ${activeTab === 'quiz' ? 'bg-green-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-100'}`}
+          >
+            📝 Knowledge Check
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <main className="max-w-6xl mx-auto px-4">
+        <div className="bg-white rounded-3xl shadow-xl p-4 md:p-8 border border-gray-100 min-h-[500px]">
+          {activeTab === 'journey' && <JourneyView />}
+          {activeTab === 'matching' && <MatchingGame />}
+          {activeTab === 'quiz' && <QuizView />}
+        </div>
+      </main>
+
+      {/* Footer Note */}
+      <footer className="text-center mt-12 text-gray-500 text-sm px-4">
+        <p>Based on Lesson 1: The Digestive System. Remember to make healthy food choices to support your digestive system!</p>
+      </footer>
+    </div>
+  );
+}
